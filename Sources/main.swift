@@ -35,6 +35,7 @@ struct QuotaData {
     var lastTimestamp: Date? = nil
     var lastQuery: String = ""
     var activeWorkspace: String = "CodeLab"
+    var activeWorkspacePath: String = ""
     
     // Métriques de tokens
     var activeSessionTokens: Int = 0
@@ -218,6 +219,7 @@ class QuotaModel: ObservableObject {
                 self.data.lastTimestamp = lastDate
                 self.data.lastQuery = lastText
                 self.data.activeWorkspace = cleanWorkspace
+                self.data.activeWorkspacePath = workspacePath
                 self.data.activeSessionTokens = sessionTokens
                 self.data.todayTokens = todayTokens
             }
@@ -225,43 +227,44 @@ class QuotaModel: ObservableObject {
     }
     
     func openTerminalWithAgy() {
+        let path = data.activeWorkspacePath
         DispatchQueue.global(qos: .userInitiated).async {
-            let isITermRunning = NSRunningApplication.runningApplications(withBundleIdentifier: "com.googlecode.iterm2").first != nil
-            let isITermInstalled = FileManager.default.fileExists(atPath: "/Applications/iTerm.app")
+            let fileManager = FileManager.default
+            guard let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
+            let quotaDir = appSupport.appendingPathComponent("GeminiQuota")
+            try? fileManager.createDirectory(at: quotaDir, withIntermediateDirectories: true)
             
-            var succeeded = false
+            let scriptURL = quotaDir.appendingPathComponent("open-agy.command")
             
-            if isITermRunning || isITermInstalled {
-                let itermScript = """
-                tell application "iTerm"
-                    activate
-                    set newWindow to (create window with default profile)
-                    tell current session of newWindow
-                        write text "agy"
-                    end tell
-                end tell
-                """
-                var error: NSDictionary?
-                if let script = NSAppleScript(source: itermScript) {
-                    script.executeAndReturnError(&error)
-                    if error == nil {
-                        succeeded = true
-                    }
-                }
+            var targetDir = path
+            var isDir: ObjCBool = false
+            if targetDir.isEmpty || !fileManager.fileExists(atPath: targetDir, isDirectory: &isDir) || !isDir.boolValue {
+                targetDir = fileManager.homeDirectoryForCurrentUser.path
             }
             
-            if !succeeded {
-                let terminalScript = """
-                tell application "Terminal"
-                    activate
-                    do script "agy"
-                end tell
-                """
-                var error: NSDictionary?
-                if let script = NSAppleScript(source: terminalScript) {
-                    script.executeAndReturnError(&error)
-                }
+            let escapedDir = targetDir.replacingOccurrences(of: "\"", with: "\\\"")
+            
+            let scriptContent = """
+            #!/bin/zsh -l
+            export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+            cd "\(escapedDir)"
+            clear
+            agy
+            exec $SHELL -l
+            """
+            
+            try? scriptContent.write(to: scriptURL, atomically: true, encoding: .utf8)
+            try? fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: scriptURL.path)
+            
+            let iTermAppPath = "/Applications/iTerm.app"
+            let proc = Process()
+            proc.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+            if fileManager.fileExists(atPath: iTermAppPath) {
+                proc.arguments = ["-a", iTermAppPath, scriptURL.path]
+            } else {
+                proc.arguments = [scriptURL.path]
             }
+            try? proc.run()
         }
     }
 }

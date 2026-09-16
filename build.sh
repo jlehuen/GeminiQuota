@@ -19,6 +19,7 @@ cp "$PROJECT_DIR/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
 cp "$PROJECT_DIR/Resources/AppIcon.icns" "$APP_DIR/Contents/Resources/AppIcon.icns"
 cp "$PROJECT_DIR/Sources/main.swift" "$APP_DIR/Contents/Resources/main.swift"
 chmod +x "$APP_DIR/Contents/MacOS/GeminiQuota"
+codesign --force --deep -s - "$APP_DIR" 2>/dev/null || true
 
 echo "✅ Application installée avec succès dans $APP_DIR"
 

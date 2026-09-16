@@ -18,5 +18,7 @@
     <string>13.0</string>
     <key>LSUIElement</key>
     <true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>GeminiQuota utilise les événements Apple pour interagir avec le terminal.</string>
 </dict>
 </plist>
