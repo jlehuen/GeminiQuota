@@ -223,6 +223,47 @@ class QuotaModel: ObservableObject {
             }
         }
     }
+    
+    func openTerminalWithAgy() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let isITermRunning = NSRunningApplication.runningApplications(withBundleIdentifier: "com.googlecode.iterm2").first != nil
+            let isITermInstalled = FileManager.default.fileExists(atPath: "/Applications/iTerm.app")
+            
+            var succeeded = false
+            
+            if isITermRunning || isITermInstalled {
+                let itermScript = """
+                tell application "iTerm"
+                    activate
+                    set newWindow to (create window with default profile)
+                    tell current session of newWindow
+                        write text "agy"
+                    end tell
+                end tell
+                """
+                var error: NSDictionary?
+                if let script = NSAppleScript(source: itermScript) {
+                    script.executeAndReturnError(&error)
+                    if error == nil {
+                        succeeded = true
+                    }
+                }
+            }
+            
+            if !succeeded {
+                let terminalScript = """
+                tell application "Terminal"
+                    activate
+                    do script "agy"
+                end tell
+                """
+                var error: NSDictionary?
+                if let script = NSAppleScript(source: terminalScript) {
+                    script.executeAndReturnError(&error)
+                }
+            }
+        }
+    }
 }
 
 struct PopoverView: View {
@@ -436,6 +477,16 @@ struct PopoverView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.small)
                 .help("Rafraîchir")
+                
+                Button {
+                    model.openTerminalWithAgy()
+                } label: {
+                    Label("agy", systemImage: "terminal")
+                        .font(.caption)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help("Ouvrir un terminal avec la commande agy")
                 
                 Button("Quitter") {
                     NSApplication.shared.terminate(nil)

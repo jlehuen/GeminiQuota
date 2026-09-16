@@ -17,7 +17,7 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
   - **Équivalent API commercial** : Estimation en dollars de la valeur des tokens traités aujourd'hui (~5,00 $ / 1M tokens), soulignant la valeur incluse dans l'abonnement.
   - **Contexte & Tokens** : Jauge d'occupation du contexte 1M de la session active et volume total des tokens du jour.
   - **Horodatage & Requête récente** : Heure de la dernière interaction et extrait textuel.
-  - **Liens rapides** : Raccourci vers Google AI Studio et bouton d'actualisation instantanée.
+  - **Liens et actions rapides** : Raccourci vers Google AI Studio, bouton d'actualisation instantanée et bouton d'ouverture directe d'un terminal avec la commande `agy` (iTerm2 / Terminal).
 
 ---
 
