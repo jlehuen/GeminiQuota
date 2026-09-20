@@ -736,6 +736,79 @@ struct PopoverView: View {
                     .shadow(color: model.deepColor.opacity(0.3), radius: 2, y: 1)
             }
             
+            // Grille des 2 métriques : Métrique 3 (Modèle actif) & Métrique 5 (Équivalent API)
+            // Dimensions strictement identiques : largeur 50% chacune, hauteur fixe 76pt
+            HStack(spacing: 10) {
+                // Métrique 3 : Modèle actif (sélecteur interactif)
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "sparkles")
+                            .font(.caption2)
+                            .foregroundStyle(.purple)
+                        Text("Modèle actif")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                    Menu {
+                        ForEach(QuotaModel.availableModels, id: \.self) { m in
+                            Button {
+                                model.setModel(m)
+                            } label: {
+                                if m == model.data.activeModel {
+                                    Label(m, systemImage: "checkmark")
+                                } else {
+                                    Text(m)
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 3) {
+                            Text(model.data.displayModelName)
+                                .font(.system(size: 13, weight: .bold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.85)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 8, weight: .bold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .menuStyle(.borderlessButton)
+                    Spacer(minLength: 0)
+                    Text("cliquer pour changer")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, minHeight: 76, maxHeight: 76, alignment: .leading)
+                .background(Color(NSColor.controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                
+                // Métrique 5 : Équivalent valeur API
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "dollarsign.circle.fill")
+                            .font(.caption2)
+                            .foregroundStyle(model.deepColor)
+                        Text("Équivalent API")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                    Text(model.data.equivalentApiCost)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(model.deepColor)
+                    Spacer(minLength: 0)
+                    Text("inclus dans compte")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, minHeight: 76, maxHeight: 76, alignment: .leading)
+                .background(Color(NSColor.controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            
             // Jauge des requêtes quotidiennes + Métrique 1 (Reset Countdown)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
@@ -888,79 +961,6 @@ struct PopoverView: View {
             .padding(11)
             .background(Color(NSColor.controlBackgroundColor))
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            
-            // Grille des 2 métriques : Métrique 3 (Modèle actif) & Métrique 5 (Équivalent API)
-            // Dimensions strictement identiques : largeur 50% chacune, hauteur fixe 76pt
-            HStack(spacing: 10) {
-                // Métrique 3 : Modèle actif (sélecteur interactif)
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "sparkles")
-                            .font(.caption2)
-                            .foregroundStyle(.purple)
-                        Text("Modèle actif")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
-                    Menu {
-                        ForEach(QuotaModel.availableModels, id: \.self) { m in
-                            Button {
-                                model.setModel(m)
-                            } label: {
-                                if m == model.data.activeModel {
-                                    Label(m, systemImage: "checkmark")
-                                } else {
-                                    Text(m)
-                                }
-                            }
-                        }
-                    } label: {
-                        HStack(spacing: 3) {
-                            Text(model.data.displayModelName)
-                                .font(.system(size: 13, weight: .bold))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.85)
-                            Image(systemName: "chevron.up.chevron.down")
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .menuStyle(.borderlessButton)
-                    Spacer(minLength: 0)
-                    Text("cliquer pour changer")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(10)
-                .frame(maxWidth: .infinity, minHeight: 76, maxHeight: 76, alignment: .leading)
-                .background(Color(NSColor.controlBackgroundColor))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                
-                // Métrique 5 : Équivalent valeur API
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "dollarsign.circle.fill")
-                            .font(.caption2)
-                            .foregroundStyle(model.deepColor)
-                        Text("Équivalent API")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
-                    Text(model.data.equivalentApiCost)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(model.deepColor)
-                    Spacer(minLength: 0)
-                    Text("inclus dans compte")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(10)
-                .frame(maxWidth: .infinity, minHeight: 76, maxHeight: 76, alignment: .leading)
-                .background(Color(NSColor.controlBackgroundColor))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
             
             // Carte : Contexte & Tokens
             VStack(alignment: .leading, spacing: 6) {
