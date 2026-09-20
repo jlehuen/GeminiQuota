@@ -15,6 +15,7 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
   - **Équivalent API commercial** : Estimation en dollars de la valeur des tokens traités aujourd'hui (~5,00 $ / 1M tokens), soulignant la valeur incluse dans l'abonnement.
   - **Jauge des requêtes quotidiennes** : Requêtes du jour vs limite quotidienne (1000) et requêtes restantes.
   - **Compte à rebours de réinitialisation** : Temps restant précis avant minuit (`Reset dans Xh YYm`).
+  - **Contexte & Tokens** : Jauge d'occupation du contexte 1M de la session active et volume total des tokens du jour.
   - **Fenêtre glissante (60 min) & Détection 429** :
     - Mini-histogramme dynamique découpé en 12 barres de 5 minutes (de `-60m` à `Maintenant`) visualisant l'intensité du débit en temps réel.
     - Indicateur de niveau de charge (`Calme`, `Faible`, `Modéré`, `Élevé`, `Saturation`).
@@ -25,7 +26,6 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
     - Liste des projets les plus actifs avec compte de requêtes et pourcentage.
     - Badge du projet actif en cours de travail.
     - Lanceur rapide vers chaque projet : bouton dédié pour ouvrir directement Ghostty/Terminal dans le dossier du projet avec `agy`.
-  - **Contexte & Tokens** : Jauge d'occupation du contexte 1M de la session active et volume total des tokens du jour.
   - **Liens et actions rapides** : Raccourci vers Google AI Studio, bouton d'actualisation instantanée, bouton réglages et bouton d'ouverture directe d'un terminal (clic droit : choix direct du workspace ou édition de `config.json`).
 
 ---

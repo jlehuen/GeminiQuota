@@ -921,6 +921,47 @@ struct PopoverView: View {
             .background(Color(NSColor.controlBackgroundColor))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             
+            // Carte : Contexte & Tokens
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    HStack(spacing: 5) {
+                        Image(systemName: "brain.head.profile")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                        Text("Contexte & Tokens")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    Spacer()
+                    Text("\(formatTokens(model.data.activeSessionTokens)) / 1M")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Gauge(value: min(100.0, model.data.contextPercentage), in: 0...100) {
+                    EmptyView()
+                } currentValueLabel: {
+                    EmptyView()
+                }
+                .gaugeStyle(.accessoryLinearCapacity)
+                .tint(model.data.contextPercentage > 60 ? .orange : .blue)
+                
+                HStack {
+                    Text("Session : \(String(format: "%.1f%%", model.data.contextPercentage)) de 1M")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text("Aujourd'hui : ~\(formatTokens(model.data.todayTokens))")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                }
+            }
+            .padding(11)
+            .background(Color(NSColor.controlBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            
             // Carte Fenêtre Glissante (60 min)
             VStack(alignment: .leading, spacing: 7) {
                 // Alerte si quota atteint (Erreur 429)
@@ -1109,47 +1150,6 @@ struct PopoverView: View {
                     Text("Aucune interaction projet aujourd'hui")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
-                }
-            }
-            .padding(11)
-            .background(Color(NSColor.controlBackgroundColor))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            
-            // Carte : Contexte & Tokens
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    HStack(spacing: 5) {
-                        Image(systemName: "brain.head.profile")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                        Text("Contexte & Tokens")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-                    Spacer()
-                    Text("\(formatTokens(model.data.activeSessionTokens)) / 1M")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Gauge(value: min(100.0, model.data.contextPercentage), in: 0...100) {
-                    EmptyView()
-                } currentValueLabel: {
-                    EmptyView()
-                }
-                .gaugeStyle(.accessoryLinearCapacity)
-                .tint(model.data.contextPercentage > 60 ? .orange : .blue)
-                
-                HStack {
-                    Text("Session : \(String(format: "%.1f%%", model.data.contextPercentage)) de 1M")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Text("Aujourd'hui : ~\(formatTokens(model.data.todayTokens))")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
                 }
             }
             .padding(11)
