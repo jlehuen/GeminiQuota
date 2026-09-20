@@ -819,7 +819,8 @@ struct PopoverView: View {
                             .foregroundStyle(.purple)
                         Text("Modèle actif")
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.primary)
                     }
                     Spacer(minLength: 0)
                     Menu {
@@ -860,7 +861,8 @@ struct PopoverView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Équivalent API")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
                     Spacer(minLength: 0)
                     Text(model.data.equivalentApiCost)
                         .font(.system(size: 14, weight: .bold))
@@ -881,7 +883,8 @@ struct PopoverView: View {
                 HStack {
                     Text("Requêtes quotidiennes")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
                     Spacer()
                     Text("\(model.data.todayCount) / \(model.data.dailyLimit)")
                         .font(.subheadline)
@@ -920,7 +923,8 @@ struct PopoverView: View {
                 HStack {
                     Text("Contexte & Tokens")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
                     Spacer()
                     Text("\(formatTokens(model.data.activeSessionTokens)) / 1M")
                         .font(.caption)
@@ -978,7 +982,8 @@ struct PopoverView: View {
                 HStack {
                     Text("Fenêtre glissante (60 min)")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
                     Spacer()
                     
                     // Badge d'intensité
@@ -1066,7 +1071,8 @@ struct PopoverView: View {
                             .foregroundStyle(.blue)
                         Text("Projets du jour")
                             .font(.subheadline)
-                            .fontWeight(.semibold)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.primary)
                     }
                     Spacer()
                     // Badge du projet actif
@@ -1148,7 +1154,8 @@ struct PopoverView: View {
                     HStack(spacing: 4) {
                         Text("Proxy")
                             .font(.caption)
-                            .fontWeight(.semibold)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.primary)
                         if model.isProxyEnabled {
                             Text("Actif")
                                 .font(.system(size: 9, weight: .bold))
