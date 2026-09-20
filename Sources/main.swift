@@ -924,14 +924,9 @@ struct PopoverView: View {
             // Carte : Contexte & Tokens
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    HStack(spacing: 5) {
-                        Image(systemName: "brain.head.profile")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                        Text("Contexte & Tokens")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
+                    Text("Contexte & Tokens")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                     Spacer()
                     Text("\(formatTokens(model.data.activeSessionTokens)) / 1M")
                         .font(.caption)
@@ -988,14 +983,9 @@ struct PopoverView: View {
                 
                 // En-tête de la carte
                 HStack {
-                    HStack(spacing: 5) {
-                        Image(systemName: "chart.bar.xaxis")
-                            .font(.subheadline)
-                            .foregroundStyle(model.data.slidingIntensityColor)
-                        Text("Fenêtre glissante (60 min)")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
+                    Text("Fenêtre glissante (60 min)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                     Spacer()
                     
                     // Badge d'intensité
