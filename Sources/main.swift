@@ -784,9 +784,8 @@ struct PopoverView: View {
     @ObservedObject var model: QuotaModel
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 11) {
-                // Header
+        VStack(spacing: 11) {
+            // Header
             HStack {
                 HStack(spacing: 8) {
                     Image(nsImage: model.appGeminiIcon)
@@ -1064,16 +1063,17 @@ struct PopoverView: View {
                 
                 // Barre segmentée façon stockage macOS
                 if !model.data.todayWorkspaces.isEmpty {
-                    GeometryReader { geo in
-                        HStack(spacing: 2) {
-                            ForEach(model.data.todayWorkspaces) { ws in
-                                let totalW = geo.size.width - CGFloat(max(0, model.data.todayWorkspaces.count - 1)) * 2.0
-                                let barW = max(3.0, totalW * CGFloat(ws.percentage / 100.0))
-                                RoundedRectangle(cornerRadius: 2)
-                                    .fill(ws.color)
-                                    .frame(width: barW, height: 7)
-                                    .help("\(ws.displayName) : \(ws.count) requête(s) (\(String(format: "%.1f", ws.percentage))%)")
-                            }
+                    let totalBarWidth: CGFloat = 266.0
+                    let spacingWidth: CGFloat = CGFloat(max(0, model.data.todayWorkspaces.count - 1)) * 2.0
+                    let usableWidth: CGFloat = max(10.0, totalBarWidth - spacingWidth)
+                    
+                    HStack(spacing: 2) {
+                        ForEach(model.data.todayWorkspaces) { ws in
+                            let barW = max(3.0, usableWidth * CGFloat(ws.percentage / 100.0))
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(ws.color)
+                                .frame(width: barW, height: 7)
+                                .help("\(ws.displayName) : \(ws.count) requête(s) (\(String(format: "%.1f", ws.percentage))%)")
                         }
                     }
                     .frame(height: 7)
@@ -1314,10 +1314,8 @@ struct PopoverView: View {
             }
         }
         .padding(16)
+        .frame(width: 320)
     }
-    .frame(width: 320)
-    .frame(maxHeight: 650)
-}
     
     func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
