@@ -899,8 +899,7 @@ struct PopoverView: View {
                 HStack {
                     Text("\(model.data.remainingRequests) dispo aujourd'hui")
                         .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(model.deepColor)
+                        .foregroundStyle(.secondary)
                     Spacer()
                     // Métrique 1 : Compte à rebours avant réinitialisation
                     HStack(spacing: 3) {
@@ -944,8 +943,7 @@ struct PopoverView: View {
                     Spacer()
                     Text("Aujourd'hui : ~\(formatTokens(model.data.todayTokens))")
                         .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding(11)
@@ -1033,8 +1031,7 @@ struct PopoverView: View {
                 HStack {
                     Text("\(model.data.hourCount) requête\(model.data.hourCount > 1 ? "s" : "") écoulée\(model.data.hourCount > 1 ? "s" : "")")
                         .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.secondary)
                     Spacer()
                     if model.data.isRateLimited {
                         HStack(spacing: 3) {
