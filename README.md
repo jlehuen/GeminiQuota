@@ -26,7 +26,6 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
     - Badge du projet actif en cours de travail.
     - Lanceur rapide vers chaque projet : bouton dédié pour ouvrir directement Ghostty/Terminal dans le dossier du projet avec `agy`.
   - **Contexte & Tokens** : Jauge d'occupation du contexte 1M de la session active et volume total des tokens du jour.
-  - **Horodatage & Requête récente** : Heure de la dernière interaction et extrait textuel.
   - **Liens et actions rapides** : Raccourci vers Google AI Studio, bouton d'actualisation instantanée, bouton réglages et bouton d'ouverture directe d'un terminal (clic droit : choix direct du workspace ou édition de `config.json`).
 
 ---

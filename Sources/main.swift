@@ -1156,30 +1156,6 @@ struct PopoverView: View {
             .background(Color(NSColor.controlBackgroundColor))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             
-            // Carte : Dernière requête
-            if let lastDate = model.data.lastTimestamp {
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack {
-                        Image(systemName: "clock")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Text("Dernière requête (\(formatTime(lastDate)))")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    if !model.data.lastQuery.isEmpty {
-                        Text(model.data.lastQuery)
-                            .font(.caption)
-                            .lineLimit(2)
-                            .foregroundStyle(.primary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(8)
-                .background(Color(NSColor.controlBackgroundColor).opacity(0.6))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            
             // Carte Proxy avec interrupteur
             HStack(spacing: 8) {
                 Image(systemName: model.isProxyEnabled ? "network" : "network.slash")
