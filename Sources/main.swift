@@ -888,7 +888,8 @@ struct PopoverView: View {
                     Spacer()
                     Text("\(model.data.todayCount) / \(model.data.dailyLimit)")
                         .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
                 }
                 
                 Gauge(value: model.data.percentageUsed, in: 0...100) {
