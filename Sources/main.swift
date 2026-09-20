@@ -492,11 +492,23 @@ class QuotaModel: ObservableObject {
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
         
         for line in lines.reversed() {
-            guard line.contains("RESOURCE_EXHAUSTED") || line.contains("Individual quota reached") else { continue }
+            // Filtrer STRICTEMENT les véritables messages d erreur système retournés par l API
+            // pour ne pas confondre avec le texte d une question utilisateur ou une réponse de l assistant
+            guard line.contains("\"source\":\"SYSTEM\"") && line.contains("\"type\":\"ERROR_MESSAGE\"") && line.contains("RESOURCE_EXHAUSTED") else {
+                continue
+            }
+            
+            guard let lineData = line.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any],
+                  let errorMsg = json["error"] as? String,
+                  errorMsg.contains("RESOURCE_EXHAUSTED")
+            else {
+                continue
+            }
             
             var totalSeconds = 0
-            if let resetsRange = line.range(of: "Resets in ") {
-                let sub = String(line[resetsRange.upperBound...])
+            if let resetsRange = errorMsg.range(of: "Resets in ") {
+                let sub = String(errorMsg[resetsRange.upperBound...])
                 var h = 0, m = 0, s = 0
                 let range = NSRange(location: 0, length: min(sub.count, 25))
                 if let match = regex?.firstMatch(in: sub, options: [], range: range) {
@@ -508,12 +520,8 @@ class QuotaModel: ObservableObject {
             }
             
             var createdAtDate: Date? = nil
-            if let dateRange = line.range(of: "\"created_at\":\"") {
-                let after = String(line[dateRange.upperBound...])
-                if let endQuote = after.range(of: "\"") {
-                    let dateStr = String(after[..<endQuote.lowerBound])
-                    createdAtDate = isoFormatterWithFractional.date(from: dateStr) ?? isoFormatterStandard.date(from: dateStr)
-                }
+            if let dateStr = json["created_at"] as? String {
+                createdAtDate = isoFormatterWithFractional.date(from: dateStr) ?? isoFormatterStandard.date(from: dateStr)
             }
             
             if let errDate = createdAtDate, totalSeconds > 0 {
