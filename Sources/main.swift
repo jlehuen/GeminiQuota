@@ -102,6 +102,15 @@ struct AppConfig: Codable {
     }
 }
 
+struct WorkspaceUsage: Identifiable {
+    let id = UUID()
+    let rawPath: String
+    let displayName: String
+    let count: Int
+    let percentage: Double
+    let color: Color
+}
+
 struct QuotaData {
     var todayCount: Int = 0
     var dailyLimit: Int = 1000
@@ -111,6 +120,7 @@ struct QuotaData {
     var activeWorkspace: String = "CodeLab"
     var activeWorkspacePath: String = ""
     var activeModel: String = "Gemini 3.8 Flash (High)"
+    var todayWorkspaces: [WorkspaceUsage] = []
     
     var displayModelName: String {
         var name = activeModel
@@ -298,15 +308,41 @@ class QuotaModel: ObservableObject {
         timer?.invalidate()
     }
     
+    static let workspacePalette: [Color] = [
+        Color(red: 0/255.0, green: 122/255.0, blue: 255/255.0),   // Apple Blue
+        Color(red: 175/255.0, green: 82/255.0, blue: 222/255.0),  // Apple Purple
+        Color(red: 255/255.0, green: 149/255.0, blue: 0/255.0),   // Apple Orange
+        Color(red: 52/255.0, green: 199/255.0, blue: 89/255.0),   // Apple Green
+        Color(red: 48/255.0, green: 176/255.0, blue: 199/255.0),  // Apple Teal
+        Color(red: 255/255.0, green: 45/255.0, blue: 85/255.0),   // Apple Pink
+        Color(red: 88/255.0, green: 86/255.0, blue: 214/255.0)    // Apple Indigo
+    ]
+    
     func cleanWorkspaceName(_ rawPath: String) -> String {
-        if rawPath.contains("codelab/client") {
+        if rawPath.hasSuffix("/Users/lehuen") || rawPath == "/Users/lehuen" {
+            return "Personnel / HAL"
+        } else if rawPath.contains("codelab/client_2") {
+            return "CodeLab (client 2)"
+        } else if rawPath.contains("codelab/client") {
             return "CodeLab (client)"
         } else if rawPath.contains("codelab/server") {
             return "CodeLab (serveur)"
-        } else if rawPath.contains("diveplanner") {
-            return "Diveplanner"
+        } else if rawPath.contains("codelab") {
+            return "CodeLab"
+        } else if rawPath.contains("gemini-quota") {
+            return "Gemini Quota"
         } else if rawPath.contains("depot-devoirs") {
             return "Dépôt Devoirs"
+        } else if rawPath.contains("www_museeIC2") {
+            return "Musée IC2"
+        } else if rawPath.contains("diveplanner") {
+            return "Diveplanner"
+        } else if rawPath.contains("Tutos Github") {
+            return "Tutos GitHub"
+        } else if rawPath.contains("Université/Github") || rawPath.contains("Université/Github") {
+            return "Univ GitHub"
+        } else if rawPath.contains("HAL") {
+            return "HAL"
         }
         let url = URL(fileURLWithPath: rawPath)
         let last = url.lastPathComponent
@@ -332,6 +368,7 @@ class QuotaModel: ObservableObject {
             var lastDate: Date? = nil
             var lastText = ""
             var workspacePath = ""
+            var todayWorkspacesCounts: [String: Int] = [:]
             
             // 1. Analyse de history.jsonl
             if let content = try? String(contentsOf: historyPath, encoding: .utf8) {
@@ -343,8 +380,10 @@ class QuotaModel: ObservableObject {
                     
                     if let tsMillis = json["timestamp"] as? Double {
                         let date = Date(timeIntervalSince1970: tsMillis / 1000.0)
+                        let ws = (json["workspace"] as? String) ?? "/Users/lehuen"
                         if date >= midnight {
                             today += 1
+                            todayWorkspacesCounts[ws, default: 0] += 1
                         }
                         if date >= oneHourAgo && date <= now {
                             hour += 1
@@ -355,10 +394,27 @@ class QuotaModel: ObservableObject {
                         if lastDate == nil || date > lastDate! {
                             lastDate = date
                             lastText = (json["display"] as? String) ?? ""
-                            workspacePath = (json["workspace"] as? String) ?? ""
+                            workspacePath = ws
                         }
                     }
                 }
+            }
+            
+            // Calcul de la répartition par projet
+            let totalTodayReqs = max(1, today)
+            let sortedWorkspaces = todayWorkspacesCounts.sorted { $0.value > $1.value }
+            var computedWorkspaces: [WorkspaceUsage] = []
+            for (index, entry) in sortedWorkspaces.enumerated() {
+                let pct = (Double(entry.value) / Double(totalTodayReqs)) * 100.0
+                let color = QuotaModel.workspacePalette[index % QuotaModel.workspacePalette.count]
+                let name = self.cleanWorkspaceName(entry.key)
+                computedWorkspaces.append(WorkspaceUsage(
+                    rawPath: entry.key,
+                    displayName: name,
+                    count: entry.value,
+                    percentage: pct,
+                    color: color
+                ))
             }
             
             // 2. Analyse des transcripts
@@ -457,6 +513,7 @@ class QuotaModel: ObservableObject {
                 self.data.lastQuery = lastText
                 self.data.activeWorkspace = cleanWorkspace
                 self.data.activeWorkspacePath = workspacePath
+                self.data.todayWorkspaces = computedWorkspaces
                 self.data.activeSessionTokens = sessionTokens
                 self.data.todayTokens = todayTokens
                 self.data.activeModel = finalModel
@@ -633,8 +690,8 @@ class QuotaModel: ObservableObject {
         }
     }
     
-    func openTerminalWithAgy() {
-        let path = data.activeWorkspacePath
+    func openTerminalWithAgy(workspacePath: String? = nil) {
+        let path = (workspacePath?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { $0.isEmpty ? nil : $0 } ?? data.activeWorkspacePath
         let proxyActive = self.isProxyEnabled
         DispatchQueue.global(qos: .userInitiated).async {
             let fileManager = FileManager.default
@@ -646,7 +703,14 @@ class QuotaModel: ObservableObject {
             let scriptURL = quotaDir.appendingPathComponent("open-agy.command")
             
             var targetDir = ""
-            if let customDir = config.workingDirectory?.trimmingCharacters(in: .whitespacesAndNewlines), !customDir.isEmpty {
+            if let specific = workspacePath, !specific.isEmpty {
+                var isDir: ObjCBool = false
+                if fileManager.fileExists(atPath: specific, isDirectory: &isDir), isDir.boolValue {
+                    targetDir = specific
+                }
+            }
+            
+            if targetDir.isEmpty, let customDir = config.workingDirectory?.trimmingCharacters(in: .whitespacesAndNewlines), !customDir.isEmpty {
                 let expanded = (customDir as NSString).expandingTildeInPath
                 var isDir: ObjCBool = false
                 if fileManager.fileExists(atPath: expanded, isDirectory: &isDir), isDir.boolValue {
@@ -720,8 +784,9 @@ struct PopoverView: View {
     @ObservedObject var model: QuotaModel
     
     var body: some View {
-        VStack(spacing: 12) {
-            // Header
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 11) {
+                // Header
             HStack {
                 HStack(spacing: 8) {
                     Image(nsImage: model.appGeminiIcon)
@@ -970,6 +1035,86 @@ struct PopoverView: View {
             .background(Color(NSColor.controlBackgroundColor))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             
+            // Carte : Projets du jour (Multi-Workspaces)
+            VStack(alignment: .leading, spacing: 7) {
+                HStack {
+                    HStack(spacing: 5) {
+                        Image(systemName: "folder.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                        Text("Projets du jour")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    Spacer()
+                    // Badge du projet actif
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 6, height: 6)
+                        Text(model.data.activeWorkspace)
+                            .font(.system(size: 10, weight: .bold))
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(Color.secondary.opacity(0.12))
+                    .clipShape(Capsule())
+                }
+                
+                // Barre segmentée façon stockage macOS
+                if !model.data.todayWorkspaces.isEmpty {
+                    GeometryReader { geo in
+                        HStack(spacing: 2) {
+                            ForEach(model.data.todayWorkspaces) { ws in
+                                let totalW = geo.size.width - CGFloat(max(0, model.data.todayWorkspaces.count - 1)) * 2.0
+                                let barW = max(3.0, totalW * CGFloat(ws.percentage / 100.0))
+                                RoundedRectangle(cornerRadius: 2)
+                                    .fill(ws.color)
+                                    .frame(width: barW, height: 7)
+                                    .help("\(ws.displayName) : \(ws.count) requête(s) (\(String(format: "%.1f", ws.percentage))%)")
+                            }
+                        }
+                    }
+                    .frame(height: 7)
+                    
+                    // Liste compacte des projets (top 4)
+                    VStack(spacing: 4) {
+                        ForEach(model.data.todayWorkspaces.prefix(4)) { ws in
+                            HStack(spacing: 6) {
+                                Circle()
+                                    .fill(ws.color)
+                                    .frame(width: 7, height: 7)
+                                Text(ws.displayName)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text("\(ws.count) req · \(Int(round(ws.percentage)))%")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                                Button {
+                                    model.openTerminalWithAgy(workspacePath: ws.rawPath)
+                                } label: {
+                                    Image(systemName: "arrow.up.forward.square")
+                                        .font(.system(size: 9))
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                                .help("Ouvrir \(model.cliAppName) dans \(ws.displayName)")
+                            }
+                        }
+                    }
+                } else {
+                    Text("Aucune interaction projet aujourd'hui")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(11)
+            .background(Color(NSColor.controlBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            
             // Carte : Contexte & Tokens
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
@@ -1141,6 +1286,17 @@ struct PopoverView: View {
                 .controlSize(.small)
                 .help("Ouvrir un terminal avec \(model.cliAppName) (clic droit : config.json)")
                 .contextMenu {
+                    if !model.data.todayWorkspaces.isEmpty {
+                        Text("Ouvrir terminal dans :")
+                        ForEach(model.data.todayWorkspaces.prefix(5)) { ws in
+                            Button {
+                                model.openTerminalWithAgy(workspacePath: ws.rawPath)
+                            } label: {
+                                Label(ws.displayName, systemImage: "folder")
+                            }
+                        }
+                        Divider()
+                    }
                     Button {
                         model.openConfigFile()
                     } label: {
@@ -1158,8 +1314,10 @@ struct PopoverView: View {
             }
         }
         .padding(16)
-        .frame(width: 320)
     }
+    .frame(width: 320)
+    .frame(maxHeight: 650)
+}
     
     func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()

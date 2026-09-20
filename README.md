@@ -11,6 +11,8 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
   - Pourcentage consommé affiché directement dans la barre d'état.
 - **Tableau de bord Popover (clic)** :
   - **Badge de statut haute lisibilité** : Pourcentage consommé avec capsule colorée contrastée.
+  - **Modèle actif & Sélecteur interactif** : Affichage en temps réel du modèle d'IA sélectionné (ex. *3.8 Flash (High)*) avec menu déroulant pour changer de modèle à la volée (`~/.gemini/antigravity-cli/settings.json`).
+  - **Équivalent API commercial** : Estimation en dollars de la valeur des tokens traités aujourd'hui (~5,00 $ / 1M tokens), soulignant la valeur incluse dans l'abonnement.
   - **Jauge des requêtes quotidiennes** : Requêtes du jour vs limite quotidienne (1000) et requêtes restantes.
   - **Compte à rebours de réinitialisation** : Temps restant précis avant minuit (`Reset dans Xh YYm`).
   - **Fenêtre glissante (60 min) & Détection 429** :
@@ -18,11 +20,14 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
     - Indicateur de niveau de charge (`Calme`, `Faible`, `Modéré`, `Élevé`, `Saturation`).
     - Détection automatique des blocages serveur `RESOURCE_EXHAUSTED (code 429)` avec affichage d'un bandeau d'alerte et du compte à rebours exact de déblocage (`Reset dans XXm YYs`).
     - Historique du dernier pic de saturation journalier une fois le quota rétabli.
-  - **Modèle actif & Sélecteur interactif** : Affichage en temps réel du modèle d'IA sélectionné (ex. *3.8 Flash (High)*) avec menu déroulant pour changer de modèle à la volée (`~/.gemini/antigravity-cli/settings.json`).
-  - **Équivalent API commercial** : Estimation en dollars de la valeur des tokens traités aujourd'hui (~5,00 $ / 1M tokens), soulignant la valeur incluse dans l'abonnement.
+  - **Visibilité Multi-projets (Workspaces)** :
+    - Jauge segmentée multicolore (façon jauge de stockage macOS) représentant la part de chaque projet dans le quota consommé aujourd'hui.
+    - Liste des projets les plus actifs avec compte de requêtes et pourcentage.
+    - Badge du projet actif en cours de travail.
+    - Lanceur rapide vers chaque projet : bouton dédié pour ouvrir directement Ghostty/Terminal dans le dossier du projet avec `agy`.
   - **Contexte & Tokens** : Jauge d'occupation du contexte 1M de la session active et volume total des tokens du jour.
   - **Horodatage & Requête récente** : Heure de la dernière interaction et extrait textuel.
-  - **Liens et actions rapides** : Raccourci vers Google AI Studio, bouton d'actualisation instantanée, bouton réglages et bouton d'ouverture directe d'un terminal (icône terminal, lance `agy` ou l'application configurée, clic droit pour éditer `config.json`).
+  - **Liens et actions rapides** : Raccourci vers Google AI Studio, bouton d'actualisation instantanée, bouton réglages et bouton d'ouverture directe d'un terminal (clic droit : choix direct du workspace ou édition de `config.json`).
 
 ---
 
