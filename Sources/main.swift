@@ -858,14 +858,9 @@ struct PopoverView: View {
                 
                 // Métrique 5 : Équivalent valeur API
                 VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "dollarsign.circle.fill")
-                            .font(.caption2)
-                            .foregroundStyle(model.deepColor)
-                        Text("Équivalent API")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
+                    Text("Équivalent API")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                     Spacer(minLength: 0)
                     Text(model.data.equivalentApiCost)
                         .font(.system(size: 14, weight: .bold))
