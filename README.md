@@ -59,7 +59,7 @@ Le script :
 Un fichier de configuration optionnel est situé dans :
 `~/Library/Application Support/GeminiQuota/config.json`
 
-*(Vous pouvez l'ouvrir à tout moment en cliquant sur le bouton d'édition **✏️** dans la carte Proxy, sur le bouton réglages **⚙️** dans la barre inférieure, ou via un **clic droit** sur le bouton terminal).*
+*(Vous pouvez l'ouvrir à tout moment en cliquant sur le bouton réglages **⚙️** dans la barre inférieure, ou via un **clic droit** sur le bouton terminal).*
 
 ```json
 {
