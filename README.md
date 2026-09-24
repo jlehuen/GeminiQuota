@@ -2,6 +2,10 @@
 
 Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en temps réel la consommation du quota quotidien Gemini, le contexte de tokens et les métriques de travail de l'agent IA Google Antigravity, en prenant en charge indifféremment l'application de bureau (**Antigravity.app**), le terminal (**`agy`**) et l'IDE.
 
+<p align="center">
+  <img src="geminiquota.png" alt="GeminiQuota Dashboard" width="594" />
+</p>
+
 ---
 
 ## Fonctionnalités
