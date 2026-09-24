@@ -100,3 +100,16 @@ Un fichier de configuration optionnel est situé dans :
 Pour lancer `GeminiQuota.app` automatiquement à l'ouverture de session macOS :
 - Aller dans **Réglages Système > Général > Ouverture**.
 - Cliquer sur le **+** sous *Ouvrir avec la session* et sélectionner `~/Applications/GeminiQuota.app`.
+
+---
+
+## Développement & Transparence
+
+Par souci de transparence et d'honnêteté, cette application a été quasi-intégralement conçue et développée en pair-programming avec l'assistance de **Google Gemini** (via les modèles Gemini et l'environnement Antigravity).
+
+---
+
+## Licence
+
+Ce projet est distribué sous [licence MIT](LICENSE). Développé par **Jérôme Lehuen**.
+
