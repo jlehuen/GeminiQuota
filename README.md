@@ -105,7 +105,7 @@ Pour lancer `GeminiQuota.app` automatiquement à l'ouverture de session macOS :
 
 ## Développement & Transparence
 
-Par souci de transparence et d'honnêteté, cette application a été quasi-intégralement conçue et développée en pair-programming avec l'assistance de **Google Gemini** (via les modèles Gemini et l'environnement Antigravity).
+Par souci de transparence, cette application a été quasi-intégralement conçue et développée en pair-programming avec l'assistance de **Google Gemini** (via les modèles Gemini et l'environnement Antigravity).
 
 ---
 
