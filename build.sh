@@ -10,7 +10,9 @@ mkdir -p "$APP_DIR/Contents/MacOS"
 mkdir -p "$APP_DIR/Contents/Resources"
 
 # Compilation native macOS avec optimisations
+mkdir -p "$PROJECT_DIR/.cache/module-cache"
 swiftc -parse-as-library -O -target arm64-apple-macos13.0 \
+    -module-cache-path "$PROJECT_DIR/.cache/module-cache" \
     "$PROJECT_DIR/Sources/main.swift" \
     -o "$APP_DIR/Contents/MacOS/GeminiQuota"
 

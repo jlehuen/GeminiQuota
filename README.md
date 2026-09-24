@@ -1,6 +1,6 @@
 # GeminiQuota
 
-Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en temps réel la consommation du quota quotidien Gemini, le contexte de tokens et les métriques de travail de l'agent IA Google Antigravity.
+Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en temps réel la consommation du quota quotidien Gemini, le contexte de tokens et les métriques de travail de l'agent IA Google Antigravity, en prenant en charge indifféremment l'application de bureau (**Antigravity.app**), le terminal (**`agy`**) et l'IDE.
 
 ---
 
@@ -20,13 +20,18 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
     - Indicateur de niveau de charge (`Calme`, `Faible`, `Modéré`, `Élevé`, `Saturation`).
     - Détection automatique des blocages serveur `RESOURCE_EXHAUSTED (code 429)` avec affichage d'un bandeau d'alerte et du compte à rebours exact de déblocage (`Reset dans XXm YYs`).
     - Historique du dernier pic de saturation journalier une fois le quota rétabli.
-  - **Visibilité Multi-projets (Workspaces)** :
-    - Jauge segmentée multicolore (façon jauge de stockage macOS) représentant la part de chaque projet dans le quota consommé aujourd'hui.
-    - Liste des projets les plus actifs avec compte de requêtes et pourcentage.
-    - Badge du projet actif en cours de travail.
-    - **Lanceur rapide vers chaque projet** : bouton `↗` dédié en bout de ligne pour ouvrir instantanément le terminal configuré (Ghostty, iTerm ou Terminal) positionné dans le répertoire du projet avec `agy`.
+  - **Visibilité Multi-projets (Workspaces de la semaine)** :
+    - Jauge segmentée multicolore (façon jauge de stockage macOS) représentant la part de chaque projet dans l'activité de la semaine (7 derniers jours).
+    - Liste des projets les plus actifs avec compte de requêtes et pourcentage sur la semaine.
+    - **Projets cliquables** : chaque ligne de projet ou segment de la jauge est directement cliquable pour ouvrir instantanément un **terminal `agy`** positionné dans le répertoire du projet (avec menu contextuel au clic droit pour ouvrir dans Antigravity.app ou révéler dans le Finder).
   - **Contrôle Proxy en direct** : Interrupteur rapide ON/OFF pour injecter ou désactiver les variables proxy à chaud dans les sessions de terminal.
-  - **Liens et actions rapides** : Raccourci vers Google AI Studio, bouton d'actualisation instantanée, bouton réglages et bouton d'ouverture directe d'un terminal (clic droit : choix direct du workspace ou édition de `config.json`).
+  - **Notifications & Alertes natives macOS** :
+    - Bannières système automatiques et sonores lors du franchissement des seuils de consommation journalière (**80%**, **90%** et **100%** de quota).
+    - Alerte instantanée lors de la détection d'une erreur `RESOURCE_EXHAUSTED (429)` avec estimation du délai de déblocage.
+    - Notification de succès dès le déblocage et le rétablissement du quota normal.
+    - Protection anti-rebond intelligente (une seule notification par seuil et par jour, persistée même en cas de redémarrage de l'application).
+  - **Présentation sur 2 colonnes** : Disposition en tableau de bord équilibré (colonne gauche : modèle actif, quotas quotidiens, activité 60m ; colonne droite : équivalent API, contexte tokens, projets de la semaine), avec cartes de modèle actif et équivalent API prenant une largeur normale sans compression.
+  - **Liens et actions rapides** : Barre horizontale inférieure avec les lanceurs rapides **AI Studio**, **Antigravity** (`Antigravity.app`) et **Terminal agy** à gauche (avec menus contextuels dédiés pour forcer un profil proxy ou choisir le workspace), et à droite les boutons d'actualisation (`🔄`), configuration (`⚙️`) et quitter.
 
 ---
 
@@ -75,6 +80,12 @@ Un fichier de configuration optionnel est situé dans :
   "application": "agy",
   "working_directory": "~/dev",
   "proxy_enabled": true,
+  "notifications_enabled": true,
+  "notify_threshold_80": true,
+  "notify_threshold_90": true,
+  "notify_threshold_100": true,
+  "notify_on_429": true,
+  "notify_sound": true,
   "http_proxy": "http://proxy.entreprise.com:8080",
   "https_proxy": "http://proxy.entreprise.com:8080",
   "all_proxy": "",
@@ -82,6 +93,10 @@ Un fichier de configuration optionnel est situé dans :
 }
 ```
 
+- **`notifications_enabled`** : Active ou désactive globalement les notifications système macOS (par défaut : `true`).
+- **`notify_threshold_80`** / **`notify_threshold_90`** / **`notify_threshold_100`** : Alertes individuelles aux paliers de 80%, 90% et 100% de requêtes consommées (par défaut : `true`).
+- **`notify_on_429`** : Alerte immédiate lors d'un blocage serveur 429 et notification de rétablissement (par défaut : `true`).
+- **`notify_sound`** : Émission du carillon sonore par défaut lors des notifications (par défaut : `true`).
 - **`application`** : Commande ou binaire à exécuter automatiquement dans le terminal (par défaut : `agy`). Alias acceptés : `app`, `command`.
 - **`working_directory`** : Dossier de départ à ouvrir dans le terminal (ex: `"~/dev"` ou `"/Users/lehuen/dev"`). Le tilde `~` est automatiquement résolu. Si vide (`""`) ou non spécifié, GeminiQuota bascule automatiquement sur le workspace actif détecté, ou à défaut sur le dossier personnel (`~`). Alias acceptés : `directory`, `workdir`.
 - **`terminal`** : Nom de l'application terminal (`Terminal`, `iTerm`, `Ghostty`, `kitty`, `Alacritty`, `Warp`, etc.) ou chemin absolu vers l'application. Si le champ est vide (`""`) ou non spécifié, GeminiQuota utilise le terminal par défaut du Mac (`Terminal.app`).
