@@ -10,32 +10,13 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
 
 ## Fonctionnalités
 
-- **Icône dynamique dans la barre des menus** :
-  - Bargraphe 3 barres progressives personnalisées couleur vert pomme Apple (`#34C759`), virant à l'orange (>70%) puis au rouge (>90%).
-  - Pourcentage consommé affiché directement dans la barre d'état.
-- **Tableau de bord Popover (clic)** :
-  - **Hiérarchie visuelle épurée** : Titres de cartes standardisés en noir gras (`.primary .bold`) et métadonnées d'accompagnement en gris discret (`.secondary .caption2`), sans icônes superflues sur les cartes de métriques.
-  - **Modèle actif & Sélecteur interactif** : Affichage en temps réel du modèle d'IA sélectionné (ex. *3.8 Flash (High)*) avec menu déroulant pour changer de modèle à la volée (`~/.gemini/antigravity-cli/settings.json`).
-  - **Équivalent API commercial** : Estimation en dollars de la valeur des tokens traités aujourd'hui (~5,00 $ / 1M tokens), soulignant la valeur incluse dans l'abonnement.
-  - **Jauge des requêtes quotidiennes** : Requêtes du jour vs limite quotidienne (1000) avec compteur en gris discret (`112 / 1000`), requêtes restantes et compte à rebours précis avant minuit (`Reset dans Xh YYm`).
-  - **Contexte & Tokens** : Jauge d'occupation du contexte 1M de la session active et volume total des tokens du jour.
-  - **Fenêtre glissante (60 min) & Détection 429** :
-    - Mini-histogramme dynamique découpé en 12 barres de 5 minutes (de `-60m` à `Maintenant`) visualisant l'intensité du débit en temps réel.
-    - Indicateur de niveau de charge (`Calme`, `Faible`, `Modéré`, `Élevé`, `Saturation`).
-    - Détection automatique des blocages serveur `RESOURCE_EXHAUSTED (code 429)` avec affichage d'un bandeau d'alerte et du compte à rebours exact de déblocage (`Reset dans XXm YYs`).
-    - Historique du dernier pic de saturation journalier une fois le quota rétabli.
-  - **Visibilité Multi-projets (Workspaces de la semaine)** :
-    - Jauge segmentée multicolore (façon jauge de stockage macOS) représentant la part de chaque projet dans l'activité de la semaine (7 derniers jours).
-    - Liste des projets les plus actifs avec compte de requêtes et pourcentage sur la semaine.
-    - **Projets cliquables** : chaque ligne de projet ou segment de la jauge est directement cliquable pour ouvrir instantanément un **terminal `agy`** positionné dans le répertoire du projet (avec menu contextuel au clic droit pour ouvrir dans Antigravity.app ou révéler dans le Finder).
-  - **Contrôle Proxy en direct** : Interrupteur rapide ON/OFF pour injecter ou désactiver les variables proxy à chaud dans les sessions de terminal.
-  - **Notifications & Alertes natives macOS** :
-    - Bannières système automatiques et sonores lors du franchissement des seuils de consommation journalière (**80%**, **90%** et **100%** de quota).
-    - Alerte instantanée lors de la détection d'une erreur `RESOURCE_EXHAUSTED (429)` avec estimation du délai de déblocage.
-    - Notification de succès dès le déblocage et le rétablissement du quota normal.
-    - Protection anti-rebond intelligente (une seule notification par seuil et par jour, persistée même en cas de redémarrage de l'application).
-  - **Présentation sur 2 colonnes** : Disposition en tableau de bord équilibré (colonne gauche : modèle actif, quotas quotidiens, activité 60m ; colonne droite : équivalent API, contexte tokens, projets de la semaine), avec cartes de modèle actif et équivalent API prenant une largeur normale sans compression.
-  - **Liens et actions rapides** : Barre horizontale inférieure avec les lanceurs rapides **AI Studio**, **Antigravity** (`Antigravity.app`) et **Terminal agy** à gauche (avec menus contextuels dédiés pour forcer un profil proxy ou choisir le workspace), et à droite les boutons d'actualisation (`🔄`), configuration (`⚙️`) et quitter.
+- **Icône dynamique en barre des menus** : Jauge colorée et pourcentage de consommation mis à jour en temps réel.
+- **Suivi des quotas & tokens** : Compteur de requêtes journalières (limite de 1 000/jour avec compte à rebours avant minuit), jauge de contexte 1M tokens et estimation de l'équivalent commercial API.
+- **Sélecteur de modèle IA** : Affichage du modèle actif et changement direct à la volée via un menu déroulant.
+- **Activité 60 min & Détection 429** : Histogramme du débit récent, détection instantanée des saturations serveur (`RESOURCE_EXHAUSTED`) avec estimation du temps de déblocage.
+- **Suivi multi-projets** : Répartition de l'activité par projet sur la semaine avec lanceurs rapides vers le terminal (`agy`), Antigravity.app ou le Finder.
+- **Notifications natives macOS** : Alertes automatiques aux seuils de consommation (80%, 90%, 100%) et notification de rétablissement de quota.
+- **Contrôle rapide du proxy** : Interrupteur ON/OFF pour injecter ou désactiver instantanément les variables proxy dans vos sessions de terminal.
 
 ---
 
@@ -49,7 +30,9 @@ Application macOS native (Swift / SwiftUI) pour la barre des menus affichant en 
 │   ├── Info.plist          # Métadonnées de l'application (LSUIElement = true)
 │   └── AppIcon.icns        # Icône officielle Google Gemini Retina multi-résolution
 ├── build.sh                # Script de compilation, packaging et déploiement
+├── geminiquota.png         # Capture d'écran du tableau de bord
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
